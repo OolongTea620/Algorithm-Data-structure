@@ -25,7 +25,9 @@
 사용
 - 인터넷 사용 기록 정보 저장 시 (앞으로 가기, 뒤로가기 ...)
   
-- 단일 연결 리스트에 비해서 메모리를 많이 사용한다.
+- 단일 연결 리스트에 비해서 메모리를 많이 사용한다.     
+
+
 **빅 오**   
 
 | 경우 |     복잡도     |
@@ -38,10 +40,9 @@
 ## 스택 (Stack)
 
 ## 큐 (Queue)
-
+tjsdlqFIFO (First In First Out)
 ## 트리  (Tree)
-하나의 시작 (root)를 시작으로 분기적으로 저장된 데이터의 형태.	
-
+하나의 시작 (root)를 시작으로 분기적으로 저장된 데이터의 형태.  
 사용 예시
 - HTML: DOM
 - JSON
@@ -156,3 +157,187 @@ DFSInOrder(){
 - 힙은 우선순위 큐에 사용됨
 - 중요한 정도에 따라서 큐 안에 적절한 장소에 배치 가능
 - 그래프순회에 자주 쓰임
+
+특징
+
+- 부모노드는 최대 두 개의 자식노드를 가진다
+- 최대 이진 힙에서 부모노드는 항상 자식노드 보다 큰 값을 가진다.
+- 최소 이진 힙은 부모 노드가 항상 자식노드 보다 작은 값을 가진다. -> 즉 root는 최소값이다.
+- 최적의 용량을 가진다
+
+**빅 오**   
+
+| 경우 |     복잡도     |
+| :--- | :------------: |
+| 삽입 |      O(logN)      |
+| 삭제 |      O(logN)      |
+| 탐색 |      O(N)      |
+
+### 힙 정렬
+
+```text
+- 배열 (Array)에 구현
+- 부모 인덱스 -> n
+- 왼쪽 자식노드는 2n + 1에 저장
+- 오른쪽 자식노드는 2n + 2에 저장
+```
+
+#### 최소정렬 힙 구현
+
+```javascript
+class MaxBinaryHeap {
+    constructor() {
+        this.values = [];
+    }
+    insert(element) {
+        // 값을 넣는 함수
+        this.values.push(element);
+        this.bubbleUp();
+    }
+    bubbleUp(){
+        // 들어간 값을 기준으로 그 값을 다시 재배치하는 과정.
+        let idx = this.values.length - 1;
+        const element = this.values[idx];
+        while(idx > 0){
+            let parentIdx = Math.floor((idx - 1)/2);
+            console.log(parentIdx);
+            let parent = this.values[parentIdx];
+            if (element <= parent) break;
+            this.values[parentIdx] = element;
+            this.values[idx] = parent;
+            idx = parentIdx; // 무한 루프 방지
+        }
+    }
+    extractMax(){
+        const max = this.values[0];
+        const end =this.values.pop();
+        if(this.values.length > 0){
+            this.values[0] = end;
+            this.sinkDown();
+        }
+        return max;
+    }
+    sinkDown(){
+        //값을 제거하고 알맞게 이진힙을 정렬하는 과정
+        let idx = 0;
+        const length = this.values.length;
+        const element = this.values[0];
+        while (true) {
+            let leftChildIdx= 2 * idx + 1;
+            let rightChildIdx= 2 * idx + 2;
+            let leftChild,rightChild;
+            let swap = null;
+            
+            if (leftChildIdx < length){
+                leftChild = this.values[leftChildIdx];
+                if (leftChild > element){
+                    swap = leftChildIdx;
+                }
+            }
+            if(rightChildIdx < length){
+                rightChild = this.values[rightChildIdx];
+                if ((swap === null && rightChild > element) || 
+                    (swap !== null && rightChild > leftChild)
+                   ) {
+                    swap =rightChildIdx;
+                }
+            }
+            if (swap === null) break;
+            this.values[idx] = this.values[swap];
+            this.values[swap] =  element;
+            idx = swap;
+        }
+    }
+    
+}
+
+let heap = new MaxBinaryHeap();
+heap.insert(41); 
+heap.insert(39); 
+heap.insert(33); 
+heap.insert(18); 
+heap.insert(27); 
+heap.insert(12); 
+heap.insert(55); 
+```
+
+### 우선 순위 큐(Priority Queue)
+
+각 요소가 그에 해당하는 우선순위를 가지는 데이터 구조
+
+#### 우선 순위 큐 구현
+
+```javascript
+class Node {
+    constructor(val, priority) {
+        this.val = val;
+        this.priority = priority;
+    }
+}
+
+class MaxBinaryHeap {
+    constructor() {
+        this.values = [];
+    }
+    enqueue(val, priority) {
+        let newNode = new Node(val, priority);
+        this.values.push(newNode);
+        this.bubbleUp();
+    }
+    bubbleUp(){
+        // 들어간 값을 기준으로 그 값을 다시 재배치하는 과정.
+        let idx = this.values.length - 1;
+        const element = this.values[idx];
+        while(idx > 0){
+            let parentIdx = Math.floor((idx - 1)/2);
+            console.log(parentIdx);
+            let parent = this.values[parentIdx];
+            if (element.priority <= parent.priority) break;
+            this.values[parentIdx] = element;
+            this.values[idx] = parent;
+            idx = parentIdx; // 무한 루프 방지
+        }
+    }
+    dequeue(){
+        const max = this.values[0];
+        const end =this.values.pop();
+        if(this.values.length > 0){
+            this.values[0] = end;
+            this.sinkDown();
+        }
+        return min;
+    }
+    sinkDown(){
+        //값을 제거하고 알맞게 이진힙을 정렬하는 과정
+        let idx = 0;
+        const length = this.values.length;
+        const element = this.values[0];
+        while (true) {
+            let leftChildIdx= 2 * idx + 1;
+            let rightChildIdx= 2 * idx + 2;
+            let leftChild,rightChild;
+            let swap = null;
+            
+            if (leftChildIdx < length){
+                leftChild = this.values[leftChildIdx];
+                if (leftChild.priority > element.priority){
+                    swap = leftChildIdx;
+                }
+            }
+            if(rightChildIdx < length){
+                rightChild = this.values[rightChildIdx];
+                if ((swap === null && rightChild.priority > element.priority) || 
+                    (swap !== null && rightChild.priority > leftChild.priority)
+                   ) {
+                    swap =rightChildIdx;
+                }
+            }
+            if (swap === null) break;
+            this.values[idx] = this.values[swap];
+            this.values[swap] =  element;
+            idx = swap;
+        }
+    }
+}
+
+```
