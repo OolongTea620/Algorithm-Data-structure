@@ -341,3 +341,113 @@ class MaxBinaryHeap {
 }
 
 ```
+
+## 해시 (Hash)
+
+key-value 방식의 데이터 구조    
+key로 value에 접근한다
+
+**빅 오**   
+(평균적인 케이스)
+| 경우 |     복잡도     |
+| :--- | :-----------: |
+| 삽입 |      O(1)      |
+| 삭제 |      O(1)      |
+| 탐색 |      O(1)      |
+
+## 그래프 (Graphs)
+
+유한하고 변할 수 있는 꼭지점이나 노드나 점들의 집합으로 구성된 데이터 구조
+
+노드나 노드들의 연결을 모은 것 
+
+- 꼭지점에 순서가 있으면 -> 유뱡향 그래프 
+- 꼭지점에 순서가 없으면 -> 무방향 그래프
+
+Usage   
+
+- 인스타 팔로우...
+- 길찾기 (경로 찾기) 등...
+
+
+**종류**    
+
+무방향 그래프, 유방향 그래프, 가중 그래프
+
+어떻게 저장하는지?
+
+1. 리스트 사용 vs 행렬 사용
+2. 해시테이블 사용
+
+- 간선에 따라서 그래프 순회가 이루어져야 한다.
+
+```javascript
+
+class Graph {
+    constructor() {
+        this.adjacencyList = {};
+    }
+    //정점 추가
+    addVertex(vertex) { // 정점 추가
+        if (!this.adjacencyList[vertex])
+            this.adjacencyList[vertex] = [];
+    }
+    
+    // 간선 추가
+    addEdge(v1,v2){
+    //1. 간선을 추가시, 두 개의 정점을 명시해야한다.
+    //2. adjacencyList에서 vertex1의 키를 찾아서 vertex2를 그 배열에 넣어줘야 한다.
+    //3. vertex2에도 동일하게 적용한다.
+        this.adjacencyList[v1].push(v2);
+        this.adjacencyList[v2].push(v1);
+    }
+    //간선 제거
+    removeEdge(v1,v2){
+        this.adjacencyList[v1] = this.adjacencyList[v1].filter(v => v !== v2);
+        this.adjacencyList[v2] = this.adjacencyList[v2].filter(v => v !== v1);
+    }
+    //정점 제거
+    removeVertex(vertex){
+        // 정점 제거시, 정점에 있는 모든 간선도 삭제, removeEdge 실행
+        while (this.adjacencyList[vertex].length) {
+            const adjacentVertex = this.adjacencyList[vertex].pop();
+            this.removeEdge(vertex, adjacentVertex);
+        }
+        delete this.adjacencyList[vertex];
+    }
+}
+```
+
+### 그래프 순회
+
+- 그래프에 있는 모든 정점을 다 방문 한다는 의미
+
+#### 그래프 깊이 우선 탐색
+
+한 인접점을 찾고 그 인접점과 연결된 정점을 이어서 탐색한다.
+
+#### 그래프 너비 우선 탐색
+
+### 다익스트라 알고리즘 (Dijkstra's Algorithm)
+
+가중치 그래프를 다루는 알고리즘
+
+두 정점 간 가장 빠른 경로를 찾는 알고리즘   
+
+양방향 그래프, (노드, 간선, 가중치 부여)
+
+Usage
+- GPS : 최단 경로
+- Network Routing : 최단 데이터 전송 길이 찾기
+- Biology (바이러스 전파도)
+- Airline tickets : 최저가 검색...
+- 등등...
+
+#### 1. 가중치 그래프 작성
+
+#### 2. 접근법
+
+1. 새로운 노드를 방문할 때마다 가장 작은 거리를 가지는 노드에 먼저 방문
+2. 노드에 거쳐간 모든 값을 저장하고 이전 값보다 작다면 갱신하고 경유 노드 정보에 저장
+3. 노드 우선순위 저장 데이터 추적으로 최단 거리 찾기
+
