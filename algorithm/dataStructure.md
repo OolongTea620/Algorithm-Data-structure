@@ -437,6 +437,7 @@ class Graph {
 양방향 그래프, (노드, 간선, 가중치 부여)
 
 Usage
+
 - GPS : 최단 경로
 - Network Routing : 최단 데이터 전송 길이 찾기
 - Biology (바이러스 전파도)
@@ -451,3 +452,68 @@ Usage
 2. 노드에 거쳐간 모든 값을 저장하고 이전 값보다 작다면 갱신하고 경유 노드 정보에 저장
 3. 노드 우선순위 저장 데이터 추적으로 최단 거리 찾기
 
+\+ 의사 코드
+```text
+1. distance에 있는 각 키들을 시작 정점을 제외하고 다 무한으로 설정
+```
+
+## 동적 프로그래밍 (Dynamic programming)
+
+복잡한 문제를 더 간단한 하위 문제의 모음으로 쪼개서 각 하위 문제들을 풀고,      
+그 답을 저장하는 방식으로 문제를 해결하는 것
+
+반복되는 하위 문제들을 가지는 문제를 해결할 때 사용.
+
+**언제 사용하는가?**
+
+- 한 문제를 더 작은 문제들로 나눌 수 있고, 그 조각 중 일부가 재활용 가능.
+- 즉 작은 문제를 풀면 점차적으로 (귀납적으로) 큰 문제가 풀릴때
+- 같은 하위 문제가 **겹치면서 반복** 될 때
+
+### 최적 부분 구조
+
+하위 문제의 최적 해답을 통해서 더 큰 범주 문제의 최적 해답을 구성할 수 있는 경우    
+
+
+ex) 최단 경로 문제: 어떤 정점의 최단 경로  
+-> 시작점과 중단 점의 최단 경로 + 중간 점과 거점의 최단 경로 + ... + 거점과 도착점의 최단 경로...
+
+### 적용 : Bottom-Up 방식
+
+```javascript
+// Dynamic programming : fibonacci sequence
+
+/* 
+ *  fib() 함수의 big O : 2^N -> 매우 안좋음....
+ *  문제점 : return n
+*/
+function fib(n) {
+    if (n <= 2) return 1;
+    return fib(n -1) + fib(n-2);
+}
+
+// 해결된 fib
+// 
+// 값을 먼저 확인하고 부른다.
+function fib2(n, memo = [undefined,1,1]) {
+    if (memo[n] !== undefined) return memo[n];
+    if (n <=2) return 1;
+    let res = fib(n -1, memo) + fib(n-2, memo);
+    memo[n] = res;
+    return res;
+}
+```
+
+### 타뷸레이션 : 상향식 접근
+
+```javascript
+function fib3(n){
+    if (n <= 2)return 1;
+    let fibNums = [0.1,1];
+    // 3~ n까지 피보나치 값 구하기
+    for (let i = 3; i <= n; i++) {
+        fibNums[i] = fibNums[i -1] + fibNums[i -2];
+    }
+    return fibNums[n];
+}
+```
